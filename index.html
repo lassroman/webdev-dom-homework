@@ -157,11 +157,15 @@
     {
       method: 'POST',
       body: JSON.stringify({
-        name: nameInputElement.value,
+        name: nameInputElement.value
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;"),
         date: formattedDate,
         isLiked: false,
         likeCounter: 0,
-        text: textInputelement.value, 
+        text: textInputelement.value
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;"), 
       })
     });
 
