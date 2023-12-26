@@ -8,6 +8,7 @@
 
   <body>
     <div class="container">
+      <div class="loader">Комментарии загружаются...</div>
       <ul class="comments" id="list">
       </ul>
       <div class="add-form">
@@ -43,6 +44,7 @@
     const nameInputElement = document.getElementById("name_input");
     const textInputelement = document.getElementById("text_input");
     const addFormElement = document.querySelector(".add-form");
+    const loader = document.querySelector(".loader");
     const formattedDate = (date) => {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -57,23 +59,14 @@
     // Массив комментариев
     let comments = [
       
-    ];   
-
-
-      function renderCommentsWithDelay() {
-    // Отображаем надпись о загрузке
-    listElement.textContent = "Загрузка комментариев...";
-
-    // Вызываем функцию renderComments() с задержкой
-    setTimeout(() => {
-      renderComments();
-    }, 2000);
-  } 
+    ];
 
 
     loadApi();
     function loadApi() {
-    // isLoading = true;
+    
+    loader.style.display = "block";
+
     return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
     {
       method: 'GET',
@@ -94,11 +87,9 @@
           };
         });
         console.log(comments);
-        renderCommentsWithDelay(2000);
+        renderComments();
+        loader.style.display = "none";
       })
-      // .then(() => {
-      // isLoading = false;
-    // });
     };
 
     // Используем метод GET для получения комментариев из API
@@ -126,17 +117,12 @@
         console.log(comments);
         renderComments();
       })
-    //   .then(() => {
-    //   isLoading = false;
-    // });
+    
     };
 
     // Рендер функция
     const renderComments = () => {
-    //   if (isLoading) {
-    //   listElement.textContent = "Loading...";
-    //   return;
-    // }
+    
       const commentHtml = comments.map((comment, index) => {
         return `<li class="comment" data-index="${index}">
           <div class="comment-header">
