@@ -90,8 +90,13 @@
         renderComments();
         loader.style.display = "none";
       })
+      .catch((error) => {
+      alert('Кажется, у вас сломался интернет, попробуйте позже');
+      console.warn(error);
+    })
     };
 
+    
     // Используем метод GET для получения комментариев из API
     function getApi() {
     
@@ -216,25 +221,41 @@
         likeCounter: 0,
         text: textInputelement.value
         .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;"), 
+        .replaceAll(">", "&gt;"),
+        forceError: true, 
       })
     })
     .then((response) => {
-      return response.json() })
-    .then(() => {
-      
-      return getApi();
+      if (response.status === 201) {
+          getApi()
+            .then(() => {
+              nameInputElement.value = "";
+              textInputelement.value = '';
+              addFormElement.innerHTML = oldFormElement;
+              addFormElement.classList.add("add-form");
+            })
+
+          return
+        }
+        if (response.status === 400) {
+          return Promise.reject("вы ввели имя короче 3-х символов");
+        }
+        if (response.status === 500) {
+          return Promise.reject("ошибка сервера");
+        }
+        return Promise.reject("сервер упал"); 
     })
-    .then((response) => {
+    .catch((error) => {
       addFormElement.innerHTML = oldFormElement;
       addFormElement.classList.add("add-form");
-    });
+      alert(error);
+      console.warn(error);
+    })
   };
   
   renderComments();
   postApi();
-  nameInputElement.value = '';
-  textInputelement.value = '';
+  
   });
      
   renderComments();
