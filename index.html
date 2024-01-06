@@ -62,8 +62,8 @@
     ];
 
 
-    loadApi();
-    function loadApi() {
+    
+    const loadApi = () => {
     
     loader.style.display = "block";
 
@@ -89,41 +89,39 @@
         console.log(comments);
         renderComments();
         loader.style.display = "none";
-      })
-      .catch((error) => {
-      alert('Кажется, у вас сломался интернет, попробуйте позже');
-      console.warn(error);
-    })
+      });
     };
 
-    
-    // Используем метод GET для получения комментариев из API
-    function getApi() {
-    
-    return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
-    {
-      method: 'GET',
-    })
+    loadApi();
 
-    .then((response) => {
-      return response.json() })
-    .then((resposneData) => {
-
-        comments = resposneData.comments.map((comment) => {
-          return {
-            name: comment.author.name,
-            date: formattedDate(new Date(comment.date)),
-            id: comment.id,
-            isLiked: comment.isLiked,
-            likeCounter: comment.likes,
-            text: comment.text,
-          };
-        });
-        console.log(comments);
-        renderComments();
-      })
     
-    };
+    // // Используем метод GET для получения комментариев из API
+    // function getApi() {
+    
+    // return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
+    // {
+    //   method: 'GET',
+    // })
+
+    // .then((response) => {
+    //   return response.json() })
+    // .then((resposneData) => {
+
+    //     comments = resposneData.comments.map((comment) => {
+    //       return {
+    //         name: comment.author.name,
+    //         date: formattedDate(new Date(comment.date)),
+    //         id: comment.id,
+    //         isLiked: comment.isLiked,
+    //         likeCounter: comment.likes,
+    //         text: comment.text,
+    //       };
+    //     });
+    //     console.log(comments);
+    //     renderComments();
+    //   })
+    
+    // };
 
     // Рендер функция
     const renderComments = () => {
@@ -151,8 +149,7 @@
       listElement.innerHTML = commentHtml;
       initLikeListeners();
       quoteComments();
-      ;
-    }
+    };
 
 
     // Цитата коммента
@@ -188,7 +185,7 @@
 
 
     // Валидация ввода
-    buttonElement.addEventListener('click', () => {
+    const addNewComment = () => {
 
       textInputelement.classList.remove("error");
       nameInputElement.classList.remove("error");
@@ -201,15 +198,11 @@
         return;
       };
 
-      
-     
-    
      // Метод POST для добавления комментариев
-     function postApi() {
       let oldFormElement = addFormElement.innerHTML;
       addFormElement.classList.remove("add-form");
       addFormElement.textContent = 'Комментарий добавляется, подождите...'
-     return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
+      fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
     {
       method: 'POST',
       body: JSON.stringify({
@@ -227,7 +220,7 @@
     })
     .then((response) => {
       if (response.status === 201) {
-          getApi()
+          loadApi()
             .then(() => {
               nameInputElement.value = "";
               textInputelement.value = '';
@@ -251,13 +244,10 @@
       alert(error);
       console.warn(error);
     })
+    renderComments();
   };
   
-  renderComments();
-  postApi();
-  
-  });
-     
+  buttonElement.addEventListener('click', addNewComment);
   renderComments();
 
   </script>
