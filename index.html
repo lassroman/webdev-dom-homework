@@ -200,13 +200,11 @@
     }
 
 
-    // Валидация ввода
-    buttonElement.addEventListener('click', () => {
-
+    const handleButtonClick = () => {
     textInputelement.classList.remove("error");
     nameInputElement.classList.remove("error");
 
-    if (nameInputElement.value === '' ) {
+    if (nameInputElement.value === '') {
       nameInputElement.classList.add("error");
       return;
     } else if (textInputelement.value === '') {
@@ -215,7 +213,9 @@
     }
 
     postApi();
-  });
+  };
+
+  buttonElement.addEventListener('click', handleButtonClick);
 
 loadApi();
 
