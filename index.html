@@ -91,37 +91,53 @@
         loader.style.display = "none";
       });
     };
-
     loadApi();
 
     
-    // // Используем метод GET для получения комментариев из API
-    // function getApi() {
-    
-    // return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
-    // {
-    //   method: 'GET',
-    // })
+    const postApi = () => {
+        let oldFormText = addFormElement.innerHTML;
+        addFormElement.classList.remove("add-form");
+        addFormElement.textContent = 'Комментарий добавляется, подождите...';
 
-    // .then((response) => {
-    //   return response.json() })
-    // .then((resposneData) => {
-
-    //     comments = resposneData.comments.map((comment) => {
-    //       return {
-    //         name: comment.author.name,
-    //         date: formattedDate(new Date(comment.date)),
-    //         id: comment.id,
-    //         isLiked: comment.isLiked,
-    //         likeCounter: comment.likes,
-    //         text: comment.text,
-    //       };
-    //     });
-    //     console.log(comments);
-    //     renderComments();
-    //   })
-    
-    // };
+        fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments", {
+          method: 'POST',
+          body: JSON.stringify({
+            name: nameInputElement.value
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;"),
+            date: formattedDate(new Date()),
+            isLiked: false,
+            likeCounter: 0,
+            text: textInputelement.value
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;"),
+          }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            }
+            if (response.status === 400) {
+              throw new Error("Вы ввели имя короче 3-х символов");
+            } else if (response.status === 500) {
+              throw new Error("Ошибка сервера");
+            }
+            throw new Error("Сервер упал");
+          })
+          .then(() => {
+            nameInputElement.value = "";
+            textInputelement.value = '';
+            addFormElement.innerHTML = oldFormText;
+            addFormElement.classList.add("add-form");
+            loadApi();
+          })
+          .catch((error) => {
+            addFormElement.innerHTML = oldFormText;
+            addFormElement.classList.add("add-form");
+            alert(error.message);
+            console.warn(error);
+          });
+      };
 
     // Рендер функция
     const renderComments = () => {
@@ -185,70 +201,23 @@
 
 
     // Валидация ввода
-    const addNewComment = () => {
+    buttonElement.addEventListener('click', () => {
 
-      textInputelement.classList.remove("error");
-      nameInputElement.classList.remove("error");
+    textInputelement.classList.remove("error");
+    nameInputElement.classList.remove("error");
 
-      if (nameInputElement.value === '' ) {
-        nameInputElement.classList.add("error");
-        return;
-      } else if (textInputelement.value === '') {
-        textInputelement.classList.add("error");
-        return;
-      };
+    if (nameInputElement.value === '' ) {
+      nameInputElement.classList.add("error");
+      return;
+    } else if (textInputelement.value === '') {
+      textInputelement.classList.add("error");
+      return;
+    }
 
-     // Метод POST для добавления комментариев
-      let oldFormElement = addFormElement.innerHTML;
-      addFormElement.classList.remove("add-form");
-      addFormElement.textContent = 'Комментарий добавляется, подождите...'
-      fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        name: nameInputElement.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;"),
-        date: formattedDate(new Date()),
-        isLiked: false,
-        likeCounter: 0,
-        text: textInputelement.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;"),
-        forceError: true, 
-      })
-    })
-    .then((response) => {
-      if (response.status === 201) {
-          loadApi()
-            .then(() => {
-              nameInputElement.value = "";
-              textInputelement.value = '';
-              addFormElement.innerHTML = oldFormElement;
-              addFormElement.classList.add("add-form");
-            })
+    postApi();
+  });
 
-          return
-        }
-        if (response.status === 400) {
-          return Promise.reject("вы ввели имя короче 3-х символов");
-        }
-        if (response.status === 500) {
-          return Promise.reject("ошибка сервера");
-        }
-        return Promise.reject("сервер упал"); 
-    })
-    .catch((error) => {
-      addFormElement.innerHTML = oldFormElement;
-      addFormElement.classList.add("add-form");
-      alert(error);
-      console.warn(error);
-    })
-    renderComments();
-  };
-  
-  buttonElement.addEventListener('click', addNewComment);
-  renderComments();
+loadApi();
 
   </script>
 </html>
