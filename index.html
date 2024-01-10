@@ -111,6 +111,7 @@
             text: textInputelement.value
               .replaceAll("<", "&lt;")
               .replaceAll(">", "&gt;"),
+              forceError: true,
           }),
         })
           .then((response) => {
