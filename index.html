@@ -140,6 +140,17 @@
           });
       };
 
+      const initAddFormButtonHandler = () => {
+    buttonElement.removeEventListener('click', handleButtonClick);
+    buttonElement.addEventListener('click', handleButtonClick);
+  };
+
+  const afterRenderComments = () => {
+    initLikeListeners();
+    quoteComments();
+    initAddFormButtonHandler(); 
+  };
+
     // Рендер функция
     const renderComments = () => {
     
@@ -164,8 +175,7 @@
       }).join("");
 
       listElement.innerHTML = commentHtml;
-      initLikeListeners();
-      quoteComments();
+      afterRenderComments();
     };
 
 
