@@ -1,80 +1,72 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Проект "Комменты"</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="loader">Комментарии загружаются...</div>
-      <ul class="comments" id="list">
-      </ul>
-      <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name"
-          placeholder="Введите ваше имя"
-          id="name_input"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-          id="text_input"
-        ></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button" id="send-button">Написать</button>
-        </div>
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="loader">Комментарии загружаются...</div>
+    <ul class="comments" id="list">
+    </ul>
+    <div class="add-form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name_input" />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+        id="text_input"></textarea>
+      <div class="add-form-row">
+        <button class="add-form-button" id="send-button">Написать</button>
       </div>
     </div>
-  </body>
-  <style>
-    .error{
-      background-color: rgb(250, 57, 57);
-    }
-  </style>
+  </div>
+</body>
+<style>
+  .error {
+    background-color: rgb(250, 57, 57);
+  }
+</style>
 
-  <script>
-    "use strict";
-    const buttonElement = document.getElementById("send-button");
-    const listElement = document.getElementById("list");
-    const nameInputElement = document.getElementById("name_input");
-    const textInputelement = document.getElementById("text_input");
-    const addFormElement = document.querySelector(".add-form");
-    const loader = document.querySelector(".loader");
-    const formattedDate = (date) => {
+<script>
+  "use strict";
+  const buttonElement = document.getElementById("send-button");
+  const listElement = document.getElementById("list");
+  const nameInputElement = document.getElementById("name_input");
+  const textInputelement = document.getElementById("text_input");
+  const addFormElement = document.querySelector(".add-form");
+  const loader = document.querySelector(".loader");
+  const formattedDate = (date) => {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString().slice(-2);
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${day}.${month}.${year} ${hours}:${minutes}`;
-    };
+  };
 
-    // let isLoading = true;
+  // let isLoading = true;
 
-    // Массив комментариев
-    let comments = [
-      
-    ];
+  // Массив комментариев
+  let comments = [
+
+  ];
 
 
-    
-    const loadApi = () => {
-    
+
+  const loadApi = () => {
+
     loader.style.display = "block";
 
     return fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments",
-    {
-      method: 'GET',
-    })
+      {
+        method: 'GET',
+      })
 
-    .then((response) => {
-      return response.json() })
-    .then((resposneData) => {
+      .then((response) => {
+        return response.json()
+      })
+      .then((resposneData) => {
 
         comments = resposneData.comments.map((comment) => {
           return {
@@ -90,72 +82,75 @@
         renderComments();
         loader.style.display = "none";
       });
-    };
-    loadApi();
+  };
+  loadApi();
 
-    
-    const postApi = () => {
-        let oldFormText = addFormElement.innerHTML;
-        addFormElement.classList.remove("add-form");
-        addFormElement.textContent = 'Комментарий добавляется, подождите...';
 
-        fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments", {
-          method: 'POST',
-          body: JSON.stringify({
-            name: nameInputElement.value
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;"),
-            date: formattedDate(new Date()),
-            isLiked: false,
-            likeCounter: 0,
-            text: textInputelement.value
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;"),
-              forceError: true,
-          }),
-        })
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            }
-            if (response.status === 400) {
-              throw new Error("Вы ввели имя короче 3-х символов");
-            } else if (response.status === 500) {
-              throw new Error("Ошибка сервера");
-            }
-            throw new Error("Сервер упал");
-          })
-          .then(() => {
-            nameInputElement.value = "";
-            textInputelement.value = '';
-            addFormElement.innerHTML = oldFormText;
-            addFormElement.classList.add("add-form");
-            loadApi();
-          })
-          .catch((error) => {
-            addFormElement.innerHTML = oldFormText;
-            addFormElement.classList.add("add-form");
-            alert(error.message);
-            console.warn(error);
-          });
-      };
+  const postApi = () => {
+    let oldFormText = addFormElement.innerHTML;
+    addFormElement.classList.remove("add-form");
+    addFormElement.textContent = 'Комментарий добавляется, подождите...';
 
-      const initAddFormButtonHandler = () => {
-    buttonElement.removeEventListener('click', handleButtonClick);
-    buttonElement.addEventListener('click', handleButtonClick);
+    fetch("https://wedev-api.sky.pro/api/v1/lassovskiy-roman/comments", {
+      method: 'POST',
+      body: JSON.stringify({
+        name: nameInputElement.value
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;"),
+        date: formattedDate(new Date()),
+        isLiked: false,
+        likeCounter: 0,
+        text: textInputelement.value
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;"),
+        forceError: true,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        if (response.status === 400) {
+          throw new Error("Вы ввели имя короче 3-х символов");
+        } else if (response.status === 500) {
+          throw new Error("Ошибка сервера");
+        }
+        throw new Error("Сервер упал");
+      })
+      .then(() => {
+        nameInputElement.value = "";
+        textInputelement.value = '';
+        addFormElement.innerHTML = oldFormText;
+        addFormElement.classList.add("add-form");
+        loadApi();
+      })
+      .catch((error) => {
+        addFormElement.innerHTML = oldFormText;
+        addFormElement.classList.add("add-form");
+        alert(error.message);
+        console.warn(error);
+      });
+  };
+
+  const initAddFormButtonHandler = () => {
+    const sendButton = document.getElementById("send-button");
+    if (sendButton) {
+      sendButton.removeEventListener('click', handleButtonClick);
+      sendButton.addEventListener('click', handleButtonClick);
+    }
   };
 
   const afterRenderComments = () => {
     initLikeListeners();
     quoteComments();
-    initAddFormButtonHandler(); 
+    initAddFormButtonHandler();
   };
 
-    // Рендер функция
-    const renderComments = () => {
-    
-      const commentHtml = comments.map((comment, index) => {
-        return `<li class="comment" data-index="${index}">
+  // Рендер функция
+  const renderComments = () => {
+
+    const commentHtml = comments.map((comment, index) => {
+      return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
             <div>${comment.date}</div>
@@ -168,50 +163,50 @@
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${comment.likeCounter}</span>
-              <button class="like-button ${comment.isLiked ? 'active-like': ''}" data-index="${index}"></button>
+              <button class="like-button ${comment.isLiked ? 'active-like' : ''}" data-index="${index}"></button>
             </div>
           </div>
         </li>`;
-      }).join("");
+    }).join("");
 
-      listElement.innerHTML = commentHtml;
-      afterRenderComments();
-    };
+    listElement.innerHTML = commentHtml;
+    afterRenderComments();
+  };
 
 
-    // Цитата коммента
-    const quoteComments = () => {
-      const commentElements = document.querySelectorAll(".comment");
-      for(const commentElement of commentElements) {
-        commentElement.addEventListener("click", () => {
-          const index = commentElement.dataset.index;
-          const commentText = comments[index].text;
-          const commentName = comments[index].name;
-          textInputelement.value = `${commentName} :
+  // Цитата коммента
+  const quoteComments = () => {
+    const commentElements = document.querySelectorAll(".comment");
+    for (const commentElement of commentElements) {
+      commentElement.addEventListener("click", () => {
+        const index = commentElement.dataset.index;
+        const commentText = comments[index].text;
+        const commentName = comments[index].name;
+        textInputelement.value = `${commentName} :
           ${commentText}`;
-        })
-      }
+      })
     }
-    
-    
-    // Счетчик лайков
-    const initLikeListeners = () => {
-      const likeButtons = document.querySelectorAll(".like-button");
-      for (const likeButton of likeButtons) {
-        likeButton.addEventListener('click' , (event) => {
-          event.stopPropagation();
+  }
+
+
+  // Счетчик лайков
+  const initLikeListeners = () => {
+    const likeButtons = document.querySelectorAll(".like-button");
+    for (const likeButton of likeButtons) {
+      likeButton.addEventListener('click', (event) => {
+        event.stopPropagation();
         const index = likeButton.dataset.index;
         comments[index].likeCounter += comments[index].isLiked ? -1 : +1;
         comments[index].isLiked = !comments[index].isLiked;
 
         renderComments();
-        
-        })
-      }
+
+      })
     }
+  }
 
 
-    const handleButtonClick = () => {
+  const handleButtonClick = () => {
     textInputelement.classList.remove("error");
     nameInputElement.classList.remove("error");
 
@@ -224,11 +219,13 @@
     }
 
     postApi();
+    initAddFormButtonHandler();
   };
 
-  buttonElement.addEventListener('click', handleButtonClick);
+  document.getElementById("send-button").addEventListener('click', handleButtonClick);
 
-loadApi();
+  loadApi();
 
-  </script>
+</script>
+
 </html>
