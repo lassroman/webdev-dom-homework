@@ -221,20 +221,30 @@
           })
         })
         .then((response) => {
-          return response.json()
-        })
-        .then(() => {
-
-          return getApi();
-        })
-        .then((response) => {
-          // addFormElement.innerHTML = oldFormElement;
-          // addFormElement.classList.add("add-form");
-          addFormElement.style.visibility = "visible";
-          onSendLoader.style.display = "none";
-        });
-    };
-
+        if (response.ok) {
+          return response.json();
+        }
+        if (response.status === 400) {
+          throw new Error("Вы ввели имя короче 3-х символов");
+        } else if (response.status === 500) {
+          throw new Error("Ошибка сервера");
+        }
+        throw new Error("Сервер упал");
+      })
+      .then(() => {
+        nameInputElement.value = "";
+        textInputelement.value = '';
+        addFormElement.style.visibility = "visible";
+        onSendLoader.style.display = "none";
+        loadApi();
+      })
+      .catch((error) => {
+        addFormElement.style.visibility = "visible";
+        onSendLoader.style.display = "none";
+        alert(error.message);
+        console.warn(error);
+      });
+  };
     renderComments();
     postApi();
     nameInputElement.value = '';
