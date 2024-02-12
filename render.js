@@ -1,4 +1,4 @@
-import { initLikeListeners, quoteComments } from "./main.js";
+import { addComment, initLikeListeners, quoteComments } from "./main.js";
 import { setToken, token, postComments, getComments, getToken  } from "./api.js" ;
 import { comments, loadApi } from "./main.js";
 import { renderLogin } from "./renderLogin.js";
@@ -39,6 +39,9 @@ export const renderComments = ({comments}) => {
     if (!token) return `<ul id="comments" class="comments">${commentHtml}</ul>
      ${btnLogin}`;
     return `<ul id="comments" class="comments">${commentHtml}</ul>
+    <div class="send-comment-loader">
+        <span>Комментарий добавляется, подождите...</span>
+      </div>
     <div class="add-form">
         <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name_input" />
         <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
@@ -50,8 +53,10 @@ export const renderComments = ({comments}) => {
     `
   }
 
-  appHtml.innerHTML = contentHtml()
-  const buttonElement = document.getElementById("send-button");
+  appHtml.innerHTML = contentHtml();
+  initLikeListeners();
+  addComment ();
+  quoteComments();
   
  const setLoginBtn = () => {
     const buttonLoginElement = document.getElementById("render-login-btn");
@@ -65,62 +70,5 @@ export const renderComments = ({comments}) => {
   };
   setLoginBtn();
 };
-// const buttonElement = document.getElementById("send-button");
-//   const nameInputElement = document.getElementById("name_input");
-//   const textInputelement = document.getElementById("text_input");
-  
-//     buttonElement.addEventListener('click', () => {
-    
 
-//     textInputelement.classList.remove("error");
-//     nameInputElement.classList.remove("error");
 
-//     if (nameInputElement.value === '') {
-//         nameInputElement.classList.add("error");
-//         return;
-//     } else if (textInputelement.value === '') {
-//         textInputelement.classList.add("error");
-//         return;
-//     };
-
-//     // Метод POST для добавления комментариев
-//     function postApi() {
-//         addFormElement.style.visibility = "hidden";
-//         onSendLoader.style.display = "block";
-        
-//         postComments({
-//             name: sanitizeHtml(nameInputElement.value),
-//             date: formattedDate(new Date()),
-//             isLiked: false,
-//             likeCounter: 0,
-//             text: sanitizeHtml(textInputelement.value)
-//         })
-//         .then((response) => {
-//                 if (response.ok) {
-//                     return response.json();
-//                 }
-//                 if (response.status === 400) {
-//                     throw new Error("Вы ввели имя короче 3-х символов");
-//                 } else if (response.status === 500) {
-//                     throw new Error("Ошибка сервера");
-//                 }
-//                 throw new Error("Сервер упал");
-//             })
-//             .then(() => {
-//                 nameInputElement.value = "";
-//                 textInputelement.value = '';
-//                 addFormElement.style.visibility = "visible";
-//                 onSendLoader.style.display = "none";
-//                 loadApi();
-//             })
-//             .catch((error) => {
-//                 addFormElement.style.visibility = "visible";
-//                 onSendLoader.style.display = "none";
-//                 alert(error.message);
-//                 console.warn(error);
-//             });
-            
-//             renderComments({comments, loadApi});
-//     } 
-    
-    // });
