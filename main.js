@@ -2,6 +2,7 @@ import { getComments, postComments } from "./api.js";
 import { formattedDate } from "./formattedDate.js";
 import { renderComments } from "./render.js";
 import { sanitizeHtml } from "./sanitizeHtml.js";
+// import { addComment} from "./render.js"
 
 
 const buttonElement = document.getElementById("send-button");
@@ -14,11 +15,16 @@ const onSendLoader = document.querySelector(".send-comment-loader");
 
 
 // Массив комментариев
-let comments = [];
+export let comments = [];
+
+export let user = JSON.parse(localStorage.getItem("user"));
+export const setUser = (newUser) => {
+  user = newUser;
+};
 
 
-loadApi();
-function loadApi() {
+
+export const loadApi = () => {
 
     loader.style.display = "block";
 
@@ -39,6 +45,7 @@ function loadApi() {
             loader.style.display = "none";
         })
 };
+loadApi();
 
 
 // Цитата коммента
@@ -74,7 +81,10 @@ export const initLikeListeners = () => {
 
 
 // Валидация ввода
-buttonElement.addEventListener('click', () => {
+export const addComment = () => {
+    
+    buttonElement.addEventListener('click', () => {
+    
 
     textInputelement.classList.remove("error");
     nameInputElement.classList.remove("error");
@@ -126,8 +136,7 @@ buttonElement.addEventListener('click', () => {
     };
     renderComments({comments});
     postApi();
-
-
 });
+};
 
 renderComments({comments});
