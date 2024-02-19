@@ -1,5 +1,6 @@
 import { getComments, postComments, token } from "./api.js";
-import { formattedDate } from "./formattedDate.js";
+// import { formattedDate } from "./formattedDate.js";
+import { format } from "date-fns";
 import { renderComments } from "./render.js";
 import { sanitizeHtml } from "./sanitizeHtml.js";
 
@@ -15,7 +16,7 @@ export const setUser = (newUser) => {
 
 
 export const loadApi = () => {
-    
+
     loader.style.display = "block";
 
     getComments().then((resposneData) => {
@@ -23,7 +24,8 @@ export const loadApi = () => {
         comments = resposneData.comments.map((comment) => {
             return {
                 name: comment.author.name,
-                date: formattedDate(new Date(comment.date)),
+                // date: formattedDate(new Date(comment.date)),
+                date: format(new Date(comment.date), "yyyy-MM-dd hh.mm.ss"),
                 id: comment.id,
                 isLiked: comment.isLiked,
                 likeCounter: comment.likes,
